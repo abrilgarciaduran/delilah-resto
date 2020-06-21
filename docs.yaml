@@ -1,0 +1,593 @@
+openapi: 3.0.1
+info:
+  title: Delilah Resto
+  description: Specifications to access and use Delilah-Resto's backend API
+  contact:
+    email: abrilgarciaduran@gmail.com
+  version: 1.0.0
+servers:
+- url: http://localhost/v1
+tags:
+- name: user
+  description: Operations about users
+- name: order
+  description: Access to Resto's orders
+- name: product
+  description: Acces to Resto's products
+paths:
+     
+  /users:
+    get:
+      tags: 
+        - user
+      summary: Gets a list of users 
+      description: Gets a list of all users registered in Delilah Resto's app
+      operationId: getUsers
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/users'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: 
+        - user
+      summary: Create new user
+      description: Register and create a new user into de Resto's data base
+      operationId: addUser
+      requestBody:
+        description: user schema
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userRequest'
+        required: true
+      responses:
+        201:
+          description: User created in database correctly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        409:
+          $ref: '#/components/responses/Conflict'
+  /users/{id}:
+    get:
+      tags: 
+        - user
+      summary: Gets a user
+      description: Gets a user by its id
+      operationId: getUserById
+      parameters:
+        - in: path
+          name: id
+          description: ID of the product wanted
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+           $ref: '#/components/responses/NotFound'
+    put:
+      tags: 
+        - user
+      summary: Modifies a user
+      description: Modifies a user with given id
+      operationId: editUserById
+      parameters:
+        - in: path
+          name: id
+          description: ID of the product wanted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: user schema
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userResponse'
+      responses:
+        201: 
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: 
+        - user
+      summary: Delete a user
+      description: Delete a user with given id
+      operationId: deleteUserById
+      parameters:
+        - in: path
+          name: id
+          description: ID of the product wanted
+          required: true
+          schema:
+            type: string
+      responses:
+        204: 
+          $ref: '#/components/responses/NoContent'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        
+  /users/login:
+    post:
+      tags: 
+      - user
+      summary: login
+      description: Endpoint to login
+      operationId: loginUser
+      requestBody:
+        description: user schema
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/userRequest"
+        required: true
+      responses:
+        201: 
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+        400: 
+          $ref: '#/components/responses/BadRequest'
+        
+
+
+  /products:
+    get:
+      tags: 
+        - product
+      summary: Gets a list of products
+      description: Gets a list of all products of the resto
+      operationId: getProducts
+      responses:
+        200: 
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/products'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: 
+        - product
+      summary: Adds a new product
+      description: Adds a new product to  the data base
+      operationId: addProduct
+      requestBody:
+        description: product schema
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/productRequest'
+        required: true
+      responses:
+        201: 
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+          
+  /products/{id}:
+    get:
+      tags: 
+        - product
+      summary: Gets a product by id
+      description: Gets a product by id
+      operationId: getProductById
+      parameters:
+        - in: path
+          name: id
+          description: ID of the product wanted
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productResponse'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: 
+        - product
+      summary: Modifies a product
+      description: Modiefies the product with the id of the url
+      operationId: editProductById
+      parameters:
+        - in: path
+          name: id
+          description: ID of the product wanted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: product schema
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/productRequest'
+        required: true
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productResponse'
+        404: 
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: 
+        - product
+      summary: Deletes a product
+      description: Indicates to the data base that the product with that id is no longer available
+      operationId: deleteProductById
+      parameters:
+        - in: path
+          name: id
+          description: ID of the product wanted
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          $ref: '#/components/responses/NoContent'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+  
+  /orders:
+    get:
+      tags: 
+        - order
+      summary: Gets all the orders
+      description: Gets all the orders registered in data base
+      operationId: getOrders
+      responses:
+        200: 
+          description: Successful operation
+          content: 
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/orders'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: 
+        - order
+      summary: Posts a new orders
+      description: Posts a new order in the data base
+      operationId: addOrder
+      requestBody:
+        description: user schema
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/orderRequest"
+        required: true
+      responses:
+        201: 
+          description: Successful operation
+          content: 
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/orderResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+          
+  /orders/{id}:
+    get:
+      tags: 
+        - order
+      summary: Gets one order
+      description: Gets the order wwith the id of the url
+      operationId: getOrderById
+      parameters:
+        - in: path
+          name: id
+          description: ID of the product wanted
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderResponse'
+        404:
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: 
+        - order
+      summary: Modifies an order
+      description: Modifies the order with given id
+      operationId: editOrderById
+      parameters:
+        - in: path
+          name: id
+          description: ID of the product wanted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Order status (New, Confirmed, Preparing, Delivering, Delivered)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: New
+        required: true
+      responses:
+        201:
+          description: Successfully updated
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/orderResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+          
+            
+          
+          
+          
+          
+components: 
+  schemas:
+    userRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: john_lennon
+        full_name:
+          type: string
+          example: John Lennon
+        email:
+          type: string
+          example: john_lennon@gmail.com
+        phone:
+          type: integer
+          example: 456123789
+        adress:
+          type: string
+          example: Abbey Rd 61
+        password:
+          type: string
+          example: 1SecretPa55w0rd1
+    userResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        username:
+          type: string
+          example: john_lennon
+        full_name:
+          type: string
+          example: John Lennon
+        email:
+          type: string
+          example: john_lennon@gmail.com
+        phone:
+          type: integer
+          example: 456123789
+        adress:
+          type: string
+          example: Abbey Rd 61
+        password:
+          type: string
+          example: 1SecretPa55w0rd1
+        is_admin:
+          type: boolean
+          example: 1
+        is_active:
+          type: boolean
+          example: 0
+    users:
+      type: array
+      items:
+        $ref: "#/components/schemas/userResponse"
+    productRequest:
+      type: object
+      properties:
+        name: 
+          type: string
+          example: Ensalada Veggie
+        img_url:
+          type: string
+          example: https://picsum.photos/200
+        price:
+          type: number
+          example: 340
+    productResponse:
+      type: object
+      properties:
+        id_product:
+          type: integer
+          example: 3
+        name: 
+          type: string
+          example: Ensalada Veggie
+        img_url:
+          type: string
+          example: https://picsum.photos/200
+        price:
+          type: number
+          example: 340
+        active:
+          type: boolean
+          example: 0
+    products:
+      type: array
+      items:
+        $ref: "#/components/schemas/productResponse"
+    orderRequest:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/productResponse"
+        payment_method:
+          type: string
+          example: cash
+        user_id:
+          type: integer
+          example: 4
+    orderResponse:
+      type: object
+      properties:
+        id_order:
+          type: integer
+          example: 1
+        status: 
+          type: string
+          example: new
+        summary:
+          type: array
+          items:
+            $ref: "#/components/schemas/productResponse"
+        order_time:
+          type: string
+          example: "Sat Jun 13 2020 14:19:03 GMT-0300"
+        final_price: 
+          type: number
+          example: 680
+        payment_method:
+          type: string
+          example: cash
+        user_id:
+          type: integer
+          example: 4
+        username:
+          type: string
+          example: john_lennon
+        full_name:
+          type: string
+          example: "John Lennon"
+        email:
+          type: string
+          example: john_lennon@gmail.com
+        phone:
+          type: integer
+          example: 456123789
+        delivery_address:
+          type: string
+          example: Abbey Rd 61
+    orders:
+      type: array
+      items:
+        $ref: "#/components/schemas/orderResponse" 
+    ordered_product:
+      type: object
+      properties:
+        id_ordered_products: 
+          type: integer
+          example: 2
+        order_id:
+          type: integer
+          example: 2
+        product_id:
+          type: integer
+          example: 2
+        product_amount:
+          type: integer
+          example: 2
+    ordered_products:
+      type: array
+      items: 
+        $ref: "#/components/schemas/ordered_product"
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvIjoiU2VyZ2lvIiwiaWF0IjoxNTkyMjY3MDI1fQ.4uC4VOiswrrUyWrlKybCNMWUbxqpT0Kh2bnE5Zw9B-U"
+          
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+          
+  responses:
+    NoContent:
+      description: Successful operation
+    BadRequest: 
+      description: Bad Request, invalid or missing input
+    Unauthorized:
+      description: Unauthorized, you are not allowed here
+    Forbidden:
+      description: Access Forbidden (not-admin)
+    NotFound:
+      description: Not Found
+    Default:
+      description: Internal Server Error
+    Conflict:
+      description: Username is already in use, pick another one
+      
+security:
+  - bearerAuth: []
