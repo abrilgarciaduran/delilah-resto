@@ -32,11 +32,20 @@ server.get('/v1/users', isAdmin, async (req, res) => {
     res.status(200).json(usersList)
 })
 
-server.post('/v1/users', existantUserData, async (req, res) => {
-    const { username, full_name, email, phone, adress, password } = req.body;
-    const newUser = await users.create(sequelize, username, full_name, email, phone, adress, password)
-    const userCreated = await users.getById(sequelize, newUser[0]);
+server.post('/v1/users', checkingInput, validateUserData, async (req, res) => {
+    const { username, full_name, email, phone, address, password } = req.body;
+    const newUser = await users.create(sequelize, username, full_name, email, phone, address, password)
+    if (newUser.length == 0) {
+        res.status(400).json({ Error: "Bad request"})
+    }
+    const userCreated = await users.getById(sequelize, newUser[0])
     res.status(201).json(userCreated)
+}) 
+
+server.put('/v1/users', isAdmin, checkingInput, async (req, res) => {
+    const { username, full_name, email, phone, address, password } = req.body;
+    const modifiedUser = await users.update(sequelize, username, full_name, email, phone, address, password)
+    res.status(200).json({Success: 'Modified'}) 
 })
 
 server.get('/v1/users/:id', isAdmin, findUser, async (req, res) => {
@@ -44,20 +53,14 @@ server.get('/v1/users/:id', isAdmin, findUser, async (req, res) => {
     res.status(200).json(useryById)
 })
 
-server.put('/v1/users', isAdmin, async (req, res) => {
-    const { username, full_name, email, phone, adress, password } = req.body;
-    const modifiedUser = await users.update(sequelize, username, full_name, email, phone, adress, password)
-    res.status(200).json({Success: 'Modified'}) 
-})
-
 server.patch('/v1/users/:id', isAdmin, async (req, res) => {
     const newAdmin = await users.makeAdminById(sequelize, req.params.id)
-    res.status(200).json(newAdmin)
+    res.status(200).json({Success: "User is now admin"})
 })
 
 server.delete('/v1/users/:id', isAdmin, findUser, async (req, res) => {
     const deleteUserById = await users.deleteById(sequelize, req.params.id)
-    res.status(200).send('producto borrado')
+    res.status(204).json({})
 })
 
 server.post('/v1/users/login', async (req, res) => {
@@ -75,7 +78,7 @@ server.post('/v1/users/login', async (req, res) => {
         is_active: userByUsername[0].is_active
     }
     const token = jwt.sign(payload, jwtSignature.signature );
-    res.status(200).json({ token });
+    res.status(201).json({ token });
 })
 
 //Product Endpoints
@@ -112,19 +115,85 @@ server.delete('/v1/products/:id', findProduct, isAdmin, async (req, res) => {
 //Order Endpoints
 server.get('/v1/orders', isAdmin, (req, res) => {
     //Trae todas las ordenes
+
+    /*
+    const getProducts = await...
+    res.status(200).json(getProducts)
+    */
 })
 
-server.post('/v1/orders', validateToken, (req, res) => {
-    //Crea un nuevo pedido
+server.post('/v1/orders', validateToken, async (req, res) => {
+    try {
+    const {final_price, id_user, payment_method} = req.body;
+    console.log('A crear orden')
+    const createOrder = await orders.create(sequelize, id_user, final_price, payment_method);
+    console.log(createOrder)
+    const { products } = req.body;
+    products.forEach(async (productToAdd) => {
+        const id = productToAdd.product_id;
+        const amount = productToAdd.amount;
+        const addProduct = await orders.addOrderedProduct(sequelize, createOrder[0], id, amount)
+        console.log(addProduct)
+    });
+    res.status(201).json({ Success: "order sent"})
+    }
+    catch {
+        res.status(400).json({ Error: "Bad Request"})
+    }
 })
 
 server.get('/v1/orders/:id', findOrder, (req, res) => {
     //Trae un pedido
+
+    /*
+    const getProduct = await...
+    res.status(200).json(getProduct)
+    */
 })
 
 server.put('/v1/orders/:id', findOrder, isAdmin, (req, res) => {
     //Modificar el estado del pedido
+
+    /*
+    const modiefiedOrder = await...
+    res.status(201).json(orderModified)
+    */
 })
+
+server.patch('/v1/orders/:id', findOrder, isAdmin, async (req, res) => {
+    const { status } = req.body;
+    const modifiedStatus = await orders.updateOrderStatus(sequelize, req.params.id, status)
+})
+
+
+/*{
+    "final_price": 630,
+    "id_user": 1,
+    "payment_method": "cash",
+    "products": [
+        {
+            "product_id": 2,
+            "amount": 3
+        }
+    ]
+}
+SELECT orders.id_order, orders.status, orders.order_time, orders.final_price, orders.payment_method, users.full_name, users.address
+FROM orders
+JOIN users ON users.id_user = orders.user_id
+WHERE orders.id_order = 2
+
+SELECT ordered_products.amount, products.name 
+FROM ordered_products
+JOIN products ON products.id_product = ordered_products.product_id
+WHERE ordered_products.order_id = 2
+*/
+
+
+
+
+
+
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -138,20 +207,29 @@ async function findOrder (req, res, next) {
     next()
 }
 async function findProduct (req, res, next) {
+    try {
     let productFound = await products.getById(sequelize, req.params.id);
     if (productFound.length === 0) {
         return res.status(404).json({ Error: 'Not Found' });
     }
     next()
+    }
+    catch {
+        res.status(400).json({Error: 'Bad request'})
+    }
 };
 async function existantProduct (req, res, next) {
-    const { name } = req.body;
-    console.log(name)
-    const productExist = await products.getByName(sequelize, name)
-    if (productExist.length > 0) {
-        res.status(409).json({Error: 'Product already exists'})
+    try {const { name } = req.body;
+        console.log(name)
+        const productExist = await products.getByName(sequelize, name)
+        if (productExist.length > 0) {
+            res.status(409).json({Error: 'Product already exists'})
+        }
+        next()
     }
-    next()
+    catch {
+        res.status(400).json({Error: 'Bad request'})
+    }
 }
 async function findUser (req, res, next) {
     let userFound = await users.getById(sequelize, req.params.id);
@@ -160,7 +238,14 @@ async function findUser (req, res, next) {
     }
     next()
 };
-async function existantUserData (req, res, next) {
+async function checkingInput (req, res, next) {
+    const { username, full_name, email, phone, address, password } = req.body;
+    if (username == undefined || email == undefined || full_name == undefined || email == undefined || phone == undefined || address == undefined || password == undefined) {
+        res.status(400).json({Error: 'Bad request'})
+    }
+    next()
+}
+async function validateUserData (req, res, next) {
     const { username, email } = req.body;
     const userDataExists = await sequelize.query(
         `SELECT * FROM users
@@ -175,7 +260,7 @@ async function existantUserData (req, res, next) {
 function validateToken (req, res, next) {
     const authorizationHeader = req.headers.authorization;
     if (!authorizationHeader) {
-        res.status(401).json({ error: 'Unauthorized, you are not logged in' });
+        res.status(401).json({ error: 'Unauthorized, please log in' });
         return;
     }
     const token = req.headers.authorization.split(" ")[1];
@@ -184,7 +269,7 @@ function validateToken (req, res, next) {
         req.username = verifiedToken;
         next();
     } else {
-        res.status(401).json({ error: 'Unauthorized, you are not logged in' });
+        res.status(401).json({ error: 'Unauthorized, please log in' });
     }
 };
 function isAdmin (req, res, next) {
@@ -201,11 +286,7 @@ function isAdmin (req, res, next) {
     } else {
         res.status(403).json({ error: 'Forbidden, you are not an admin user' });
         };
-    }
-    function generateToken (payload) {
-        const token = jwt.sign(payload, signature)
-        return token
-    }
+}
 
 
 

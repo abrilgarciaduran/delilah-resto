@@ -58,33 +58,6 @@ paths:
           $ref: '#/components/responses/BadRequest'
         409:
           $ref: '#/components/responses/Conflict'
-  /users/{id}:
-    get:
-      tags: 
-        - user
-      summary: Gets a user
-      description: Gets a user by its id
-      operationId: getUserById
-      parameters:
-        - in: path
-          name: id
-          description: ID of the product wanted
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/userResponse'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
-        404:
-           $ref: '#/components/responses/NotFound'
     put:
       tags: 
         - user
@@ -117,8 +90,53 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/Forbidden'
+  /users/{id}:
+    get:
+      tags: 
+        - user
+      summary: Gets a user
+      description: Gets a user by its id
+      operationId: getUserById
+      parameters:
+        - in: path
+          name: id
+          description: ID of the product wanted
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userResponse'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
         404:
-          $ref: '#/components/responses/NotFound'
+           $ref: '#/components/responses/NotFound'
+    patch:
+      tags: 
+        - user
+      summary: Make admin
+      description: Make user with given ID a new admin
+      operationId: makeAdmin
+      parameters:
+        - in: path
+          name: id
+          description: ID of the user to make admin
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Success"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
     delete:
       tags: 
         - user
@@ -128,7 +146,7 @@ paths:
       parameters:
         - in: path
           name: id
-          description: ID of the product wanted
+          description: ID of the user wanted
           required: true
           schema:
             type: string
@@ -164,7 +182,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/userResponse'
+                $ref: '#/components/schemas/Token'
         400: 
           $ref: '#/components/responses/BadRequest'
         
@@ -209,6 +227,8 @@ paths:
         400:
           $ref: '#/components/responses/BadRequest'
         403:
+          $ref: '#/components/responses/Forbidden'
+        409: 
           $ref: '#/components/responses/Forbidden'
           
   /products/{id}:
@@ -263,6 +283,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/productResponse'
+        401: 
+          $ref: '#/components/responses/Unauthorized'
+        403: 
+          $ref: '#/components/responses/Forbidden'
         404: 
           $ref: '#/components/responses/NotFound'
     delete:
@@ -285,6 +309,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/Forbidden'
+        404: 
+          $ref: '#/components/responses/NotFound'
   
   /orders:
     get:
@@ -302,6 +328,8 @@ paths:
                   $ref: '#/components/schemas/orders'
         401:
           $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
     post:
       tags: 
         - order
@@ -356,6 +384,39 @@ paths:
       summary: Modifies an order
       description: Modifies the order with given id
       operationId: editOrderById
+      parameters:
+        - in: path
+          name: id
+          description: ID of the product wanted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: All you need to change
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/orderRequest"
+        required: true
+      responses:
+        201:
+          description: Successfully updated
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/orderResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+    patch:
+      tags: 
+        - order
+      summary: Modifies an order's Status
+      description: Modifies the order's status with given id
+      operationId: editOrderStatusById
       parameters:
         - in: path
           name: id
@@ -490,13 +551,15 @@ components:
         products:
           type: array
           items:
-            $ref: "#/components/schemas/productResponse"
+            id:
+              type: integer
+              example: 1
+            quantity:
+              type: number
+              example: 1
         payment_method:
           type: string
           example: cash
-        user_id:
-          type: integer
-          example: 4
     orderResponse:
       type: object
       properties:
@@ -565,7 +628,7 @@ components:
       properties:
         token:
           type: string
-          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c3VhcmlvIjoiU2VyZ2lvIiwiaWF0IjoxNTkyMjY3MDI1fQ.4uC4VOiswrrUyWrlKybCNMWUbxqpT0Kh2bnE5Zw9B-U"
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InphZmlyb1JvYmVydG8iLCJpc19hZG1pbiI6MSwiaXNfYWN0aXZlIjoxLCJpYXQiOjE1OTI4Njc4NjV9.DIS1NmJb3N8Dx-cioah5iHNJpIY6lAKOeUVUqSdJ2og"
           
   securitySchemes:
     bearerAuth:
@@ -579,7 +642,7 @@ components:
     BadRequest: 
       description: Bad Request, invalid or missing input
     Unauthorized:
-      description: Unauthorized, you are not allowed here
+      description: Unauthorized, please log in
     Forbidden:
       description: Access Forbidden (not-admin)
     NotFound:
@@ -587,7 +650,7 @@ components:
     Default:
       description: Internal Server Error
     Conflict:
-      description: Username is already in use, pick another one
+      description: Nameor email are already in use, pick another one
       
 security:
   - bearerAuth: []

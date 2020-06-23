@@ -33,16 +33,16 @@ function getByUsername (sql, username) {
     return query
 }
 
-function create(sql, username, full_name, email, phone_number, adress, password) {
+function create(sql, username, full_name, email, phone_number, address, password) {
     let query = sql.query(
-        `INSERT INTO users (username, full_name, email, phone_number, adress, user_password, is_active, is_admin)
-        VALUES (:username, :full_name, :email, :phone_number, :adress, :password, is_active, is_admin)`, {
+        `INSERT INTO users (username, full_name, email, phone_number, address, user_password, is_active, is_admin)
+        VALUES (:username, :full_name, :email, :phone_number, :address, :password, is_active, is_admin)`, {
             replacements: {
                 username,
                 full_name,
                 email,
                 phone_number,
-                adress,
+                address,
                 password,
                 is_active: true,
                 is_admin: false
@@ -53,17 +53,17 @@ function create(sql, username, full_name, email, phone_number, adress, password)
     return query
 }
 
-function update (sql, username, full_name, email, phone_number, adress, user_password) {
+function update (sql, username, full_name, email, phone_number, address, user_password) {
     let query = sql.query(
         `UPDATE users
-        SET username = :username, full_name = :full_name, email = :email, phone_number = :phone_number, adress = :adress, user_password = :user_password
+        SET username = :username, full_name = :full_name, email = :email, phone_number = :phone_number, address = :address, user_password = :user_password
         WHERE username = :username`, {
             replacements: {
                 username,
                 full_name,
                 email,
                 phone_number,
-                adress,
+                address,
                 user_password
             },
             type: sql.QueryTypes.UPDATE
