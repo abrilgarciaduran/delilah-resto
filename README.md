@@ -33,7 +33,7 @@ Puedes encontrar la documentación en el archivo **/docs.yaml**. Puedes copiarla
 Abrir la consola y ejecutar:
 >$ git clone https://github.com/abrilgarciaduran/delilah-resto.git
 
-O clonar el proyecto desde el siguiente [link](https://github.com/abrilgarciaduran/delilah-resto.git)
+O clonar el proyecto desde el siguiente [link](https://github.com/abrilgarciaduran/delilah-resto)
 
 2) **Instalar dependencias**
 
