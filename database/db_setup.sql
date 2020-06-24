@@ -1,7 +1,3 @@
-/*Creando base de datos Delilah resto*/
-
-CREATE DATABASE delilah_resto;
-
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS products;
@@ -15,6 +11,7 @@ CREATE TABLE users (
     full_name VARCHAR (255) NOT NULL,
     phone_number INT NOT NULL,
     address VARCHAR (255) NOT NULL,
+    email VARCHAR (255) NOT NULL,
     user_password VARCHAR (60) NOT NULL,
     is_admin BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE
@@ -42,17 +39,12 @@ CREATE TABLE ordered_products (
     id_ordered_products INT PRIMARY KEY AUTO_INCREMENT,
     order_id INT NOT NULL,
     product_id INT NOT NULL,
-    amount INT NOT NULL,
+    amount INT NOT NULL
 );
 
 
-/*Creando registros iniciales*/
 
-INSERT INTO users (username, full_name, phone_number, adress, user_password, is_admin)
-    VALUES("administrador1", "Delilah Resto", 12345678, "Delilah resto´s adress", "adminpass", TRUE);
-
-INSERT INTO users (username, full_name, phone_number, adress, user_password, is_admin)
-    VALUES("administrador1", "Delilah Resto", 12345678, "Delilah resto´s adress", "adminpass", TRUE);
-
+INSERT INTO users (username, full_name, phone_number, address, email, user_password, is_admin)
+    VALUES("administrador1", "Delilah Resto", 12345678, "Delilah resto´s address", "delilah@email.com", "adminpass", TRUE);
 
 
