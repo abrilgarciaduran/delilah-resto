@@ -1,7 +1,7 @@
 Delilah Resto
 =========
 
-3er proyecto de la carrera de Desarrollo Web Full Stack en Acámica
+3er proyecto de la carrera de Desarrollo Web Full Stack en Acámica.
 El proyecto consiste en una **API Rest** para manejar los pedidos, productos y usuarios de un Resto.
 
 ---
