@@ -5,7 +5,7 @@ function get (sql) {
     let query = sql.query(
     `SELECT * FROM users`, {
         type: sql.QueryTypes.SELECT
-    })
+    });
     return query
 }
 
@@ -17,7 +17,7 @@ function getById (sql, id) {
                 id_user: id
             },
             type: sql.QueryTypes.SELECT
-        })
+        });
     return query
 }
 
@@ -29,7 +29,7 @@ function getByUsername (sql, username) {
                 username: username
             },
             type: sql.QueryTypes.SELECT
-        })
+        });
     return query
 }
 
@@ -49,7 +49,7 @@ function create(sql, username, full_name, email, phone_number, address, password
             },
             type: sql.QueryTypes.INSERT
         }
-    )
+    );
     return query
 }
 
@@ -68,7 +68,7 @@ function update (sql, username, full_name, email, phone_number, address, user_pa
             },
             type: sql.QueryTypes.UPDATE
         }
-    )
+    );
     return query
 }
 
@@ -82,7 +82,7 @@ function makeAdminById (sql, id) {
             },
             type: sql.QueryTypes.UPDATE
         }
-    )
+    );
     return query
 }
 
@@ -96,8 +96,8 @@ function deleteById (sql, id) {
             },
             type: sql.QueryTypes.UPDATE
         }
-    )
+    );
     return query
 }
 
-module.exports = { get, getById, getByUsername, create, update, makeAdminById, deleteById }
+module.exports = { create, get, getById, getByUsername, update, makeAdminById, deleteById }

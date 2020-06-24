@@ -18,7 +18,6 @@ function create (sql, user_id, final_price, payment_method){
         + currentdate.getHours() + ":"  
         + currentdate.getMinutes() + ":" 
         + currentdate.getSeconds();
-        console.log(horaActual)
 
     let query = sql.query(
         `INSERT INTO orders (status, payment_method, final_price, user_id, order_time) 
@@ -48,7 +47,7 @@ function addOrderedProduct (sql, order_id, product_id, amount) {
             },
             type: sql.QueryTypes.INSERT
         }
-    )
+    );
     return query
 }
 
@@ -58,7 +57,7 @@ function get (sql) {
         FROM orders
         JOIN users ON users.id_user = orders.user_id`, {
             type: sql.QueryTypes.SELECT
-        })
+        });
         return query
 }
 
@@ -72,7 +71,7 @@ function getById (sql, id_order) {
                 id_order: id_order
             },
             type: sql.QueryTypes.SELECT
-        })
+        });
     return query
 }
 
@@ -86,7 +85,7 @@ function getByUserId (sql, id_user) {
                 id_user: id_user
             },
             type: sql.QueryTypes.SELECT
-        })
+        });
     return query
 }
 
@@ -100,7 +99,7 @@ function getOrderedProductsById (sql, id_order) {
                 id_order: id_order
             },
             type: sql.QueryTypes.SELECT
-        })
+        });
     return query
 }
 
@@ -118,4 +117,4 @@ function updateOrderStatus (sql, id_order, status) {
     return query
 };
 
-module.exports = { create, addOrderedProduct, get, getOrderedProductsById, getById, getByUserId, updateOrderStatus }
+module.exports = { create, addOrderedProduct, get, getById, getByUserId, getOrderedProductsById, updateOrderStatus }

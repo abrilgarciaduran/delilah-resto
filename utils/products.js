@@ -5,7 +5,7 @@ function get (sql) {
     `SELECT * FROM products
     WHERE is_active = true`, {
         type: sql.QueryTypes.SELECT
-    })
+    });
     return query
 }
 
@@ -17,7 +17,7 @@ function getById (sql, id) {
                 id_product: id
             },
             type: sql.QueryTypes.SELECT
-        })
+        });
     return query
 }
 
@@ -29,7 +29,7 @@ function getByName (sql, name) {
                 name: name
             },
             type: sql.QueryTypes.SELECT
-        })
+        });
     return query
 }
 
@@ -45,7 +45,7 @@ function create(sql, name, price, img_url) {
             },
             type: sql.QueryTypes.INSERT
         }
-    )
+    );
     return query
 }
 
@@ -59,7 +59,7 @@ function deleteById (sql, id) {
             },
             type: sql.QueryTypes.UPDATE
         }
-    )
+    );
     return query
 }
 
@@ -77,8 +77,8 @@ function update (sql, id, name, price, img_url) {
             },
             type: sql.QueryTypes.UPDATE
         }
-    )
+    );
     return query
 }
 
-module.exports = { get, getById, getByName, create, update, deleteById }
+module.exports = { create, get, getById, getByName, update, deleteById }
