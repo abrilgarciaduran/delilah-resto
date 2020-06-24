@@ -27,18 +27,18 @@ Puedes encontrar la documentación en el archivo **docs.yaml**. Puedes copiarla 
 
 ## Instalación del proyecto
 
-1) Clonar el proyecto
+1) **Clonar el proyecto**
 
 Abrir la consola y ejecutar:
 >$ git clone https://github.com/abrilgarciaduran/delilah-resto.git
 O clonar el proyecto desde el siguiente link
 
-2) Instalar dependencias
+2) **Instalar dependencias**
 
 En la consola, dirigirse a la carpeta raíz del proyecto y ejecutar:
 >npm init
 
-3) Configurar base de datos
+3) **Configurar base de datos**
 
 Abrir XAMPP e iniciar los servicios Apache y MySQL (Si no tiene XAMPP instalado, descarguelo **aqui**)
 Corroborar que el puerto de ejecución sea el 3306
@@ -47,11 +47,11 @@ Crear una nueva base de datos llamada delilah_resto desde el panel de control
 Ejecutar las queries del archivo \database\db_setup.sql en la solapa SQL del panel de control
 Puedes modificar usuario, contraseña y puerto de la base de datos en \database\db_data.js
 
-4) Iniciar el servidor
+4) **Iniciar el servidor**
 
 En la consola, dirigirse a la carpeta raíz del proyecto y ejecutar:
 >node server.js
 
-5) Listo para usar
+5) **Listo para usar**
 
-En esta **colección de Postman** puedes ver ejemplos de consultas a cada endpoint.
+En esta [colección de Postman](https://www.getpostman.com/collections/d77ffe64734586288cb9) puedes ver ejemplos de consultas a cada endpoint.
