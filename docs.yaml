@@ -347,19 +347,6 @@ paths:
           $ref: '#/components/responses/BadRequest'
         401:
           $ref: '#/components/responses/Unauthorized'
-    delete:
-      tags: 
-        - order
-      summary: Delete order by user id
-      description: Change status to cancelled by the user id obtained in token's payload
-      operationId: deleteOrderByUserId
-      responses:
-        201: 
-          description: Success Order Deleted
-        400:
-          $ref: '#/components/responses/BadRequest'
-        403:
-          $ref: '#/components/responses/Forbidden'
           
   /orders/{id}:
     get:
@@ -421,6 +408,35 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/Forbidden'
+    delete:
+      tags: 
+        - order
+      summary: Deletes one order (only admin-user)
+      description: Deletes order by Id
+      operationId: deleteOrderById
+      parameters:
+        - in: path
+          name: id
+          description: ID of the product wanted
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success, order delted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'        
+        404:
+          $ref: '#/components/responses/NotFound'
+        
           
             
           

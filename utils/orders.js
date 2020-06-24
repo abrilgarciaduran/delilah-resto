@@ -117,13 +117,13 @@ function updateOrderStatus (sql, id_order, status) {
     return query
 };
 
-function deleteByUserId (sql, id_user) {
+function deleteById (sql, id) {
     let query = sql.query(
         `UPDATE orders
         SET status = :status
-        WHERE user_id = :id_user`, {
+        WHERE id_order = :id`, {
         replacements: {
-            id_user: id_user,
+            id: id,
             status: 'cancelled'
         },
         type: sql.QueryTypes.UPDATE
@@ -131,4 +131,4 @@ function deleteByUserId (sql, id_user) {
     return query
 }
 
-module.exports = { create, addOrderedProduct, get, getById, getByUserId, getOrderedProductsById, updateOrderStatus, deleteByUserId }
+module.exports = { create, addOrderedProduct, get, getById, getByUserId, getOrderedProductsById, updateOrderStatus, deleteById }
