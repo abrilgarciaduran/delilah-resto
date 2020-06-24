@@ -43,10 +43,15 @@ En la consola, dirigirse a la carpeta raíz del proyecto y ejecutar:
 3) **Configurar base de datos**
 
 Abrir XAMPP e iniciar los servicios Apache y MySQL (Si no tiene XAMPP instalado, descarguelo [aquí](https://www.apachefriends.org/es/download.html))
+
 Corroborar que el puerto de ejecución sea el 3306
+
 Ingresar en su navegador a http://localhost/phpmyadmin/
+
 Crear una nueva base de datos llamada delilah_resto desde el panel de control
+
 Ejecutar las queries del archivo \database\db_setup.sql en la pestaña SQL del panel de control
+
 Puedes modificar usuario, contraseña y puerto de la base de datos en \database\db_data.js
 
 4) **Iniciar el servidor**
