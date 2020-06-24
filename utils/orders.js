@@ -117,4 +117,18 @@ function updateOrderStatus (sql, id_order, status) {
     return query
 };
 
-module.exports = { create, addOrderedProduct, get, getById, getByUserId, getOrderedProductsById, updateOrderStatus }
+function deleteByUserId (sql, id_user) {
+    let query = sql.query(
+        `UPDATE orders
+        SET status = :status
+        WHERE user_id = :id_user`, {
+        replacements: {
+            id_user: id_user,
+            status: 'cancelled'
+        },
+        type: sql.QueryTypes.UPDATE
+    });
+    return query
+}
+
+module.exports = { create, addOrderedProduct, get, getById, getByUserId, getOrderedProductsById, updateOrderStatus, deleteByUserId }

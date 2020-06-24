@@ -158,6 +158,25 @@ server.post('/v1/orders', validateToken, async (req, res) => {
     }
 })
 
+server.delete('/v1/orders', validateToken, async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1];
+        const verifiedToken = jwt.verify(token, jwtSignature.signature);
+        const order_user_id = verifiedToken.id;
+        const orderToDelete = await orders.getByUserId(sequelize, order_user_id)
+        if (orderToDelete[0].status != 'new') {
+            res.status(403).json({ Error: 'Forbidden, you can not delete the order'})
+        } else {
+            const deleteOrder = await orders.deleteByUserId(sequelize, order_user_id)
+            console.log('A borrarlo')
+            res.status(201).json({ Success: 'Order deleted'})
+        }
+    }
+    catch {
+        res.status(400).json({ Error: 'Bad request'})
+    }
+})
+
 server.get('/v1/orders/:id', findOrder, isAdmin, async (req, res) => {
     try {
         const getOrder = await orders.getById(sequelize, req.params.id);
@@ -175,6 +194,7 @@ server.patch('/v1/orders/:id', findOrder, isAdmin, async (req, res) => {
     const modifiedStatus = await orders.updateOrderStatus(sequelize, req.params.id, status);
     res.status(200).json({Success: "Status changed"});
 })
+
 
 
 
