@@ -64,13 +64,6 @@ paths:
       summary: Modifies a user
       description: Modifies a user with given id
       operationId: editUserById
-      parameters:
-        - in: path
-          name: id
-          description: ID of the product wanted
-          required: true
-          schema:
-            type: string
       requestBody:
         description: user schema
         content:
@@ -317,7 +310,7 @@ paths:
       tags: 
         - order
       summary: Gets all the orders
-      description: Gets all the orders registered in data base
+      description: Gets all the orders registered in data base (if admin), gets own order (if not)
       operationId: getOrders
       responses:
         200: 
@@ -378,39 +371,6 @@ paths:
                 $ref: '#/components/schemas/orderResponse'
         404:
           $ref: '#/components/responses/NotFound'
-    put:
-      tags: 
-        - order
-      summary: Modifies an order
-      description: Modifies the order with given id
-      operationId: editOrderById
-      parameters:
-        - in: path
-          name: id
-          description: ID of the product wanted
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: All you need to change
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/orderRequest"
-        required: true
-      responses:
-        201:
-          description: Successfully updated
-          content:
-            application/json:
-                schema:
-                  $ref: '#/components/schemas/orderResponse'
-        400:
-          $ref: '#/components/responses/BadRequest'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/Forbidden'
     patch:
       tags: 
         - order
@@ -551,12 +511,14 @@ components:
         products:
           type: array
           items:
-            id:
-              type: integer
-              example: 1
-            quantity:
-              type: number
-              example: 1
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              quantity:
+                type: number
+                example: 1
         payment_method:
           type: string
           example: cash
@@ -654,3 +616,4 @@ components:
       
 security:
   - bearerAuth: []
+

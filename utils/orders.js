@@ -8,16 +8,28 @@ INNER JOIN users
 ON orders.user_id = users.id_user
 */
 
+
+
 function create (sql, user_id, final_price, payment_method){
+    var currentdate = new Date(); 
+    var horaActual = currentdate.getFullYear() + "-"  
+        + (currentdate.getMonth()+1)  + "-" 
+        + currentdate.getDate() + " "
+        + currentdate.getHours() + ":"  
+        + currentdate.getMinutes() + ":" 
+        + currentdate.getSeconds();
+        console.log(horaActual)
+
     let query = sql.query(
-        `INSERT INTO orders (status, payment_method, final_price, user_id) 
-         VALUES (:status, :payment_method, :final_price, :user_id)`,
+        `INSERT INTO orders (status, payment_method, final_price, user_id, order_time) 
+         VALUES (:status, :payment_method, :final_price, :user_id, :order_time)`,
         {
             replacements: {
                 status: "new",
                 user_id: user_id,
                 payment_method: payment_method,
-                final_price: final_price
+                final_price: final_price,
+                order_time: horaActual
             },
             type: sql.QueryTypes.INSERT
         });
@@ -35,21 +47,70 @@ function addOrderedProduct (sql, order_id, product_id, amount) {
                 amount: amount
             },
             type: sql.QueryTypes.INSERT
-        })
+        }
+    )
+    return query
 }
 
+function get (sql) {
+    let query = sql.query(
+        `SELECT orders.id_order, orders.status, orders.order_time, orders.final_price, orders.payment_method, users.full_name, users.address
+        FROM orders
+        JOIN users ON users.id_user = orders.user_id`, {
+            type: sql.QueryTypes.SELECT
+        })
+        return query
+}
 
+function getById (sql, id_order) {
+    let query = sql.query(
+        `SELECT orders.id_order, orders.status, orders.order_time, orders.final_price, orders.payment_method, users.full_name, users.address
+        FROM orders
+        JOIN users ON users.id_user = orders.user_id
+        WHERE orders.id_order = :id_order`, {
+            replacements: {
+                id_order: id_order
+            },
+            type: sql.QueryTypes.SELECT
+        })
+    return query
+}
 
+function getByUserId (sql, id_user) {
+    let query = sql.query(
+        `SELECT orders.id_order, orders.status, orders.order_time, orders.final_price, orders.payment_method, users.full_name, users.address
+        FROM orders
+        JOIN users ON users.id_user = orders.user_id
+        WHERE orders.user_id = :id_user`, {
+            replacements: {
+                id_user: id_user
+            },
+            type: sql.QueryTypes.SELECT
+        })
+    return query
+}
 
+function getOrderedProductsById (sql, id_order) {
+    let query = sql.query(
+        `SELECT ordered_products.amount, products.name 
+        FROM ordered_products
+        JOIN products ON products.id_product = ordered_products.product_id
+        WHERE ordered_products.order_id = :id_order`, {
+            replacements: {
+                id_order: id_order
+            },
+            type: sql.QueryTypes.SELECT
+        })
+    return query
+}
 
-
-function updateOrderStatus (sql, id, status) {
+function updateOrderStatus (sql, id_order, status) {
     let query = sql.query(
         `UPDATE orders
         SET status = :status
-        WHERE id = :id`, {
+        WHERE id_order = :id_order`, {
         replacements: {
-            id,
+            id_order: id_order,
             status: status
         },
         type: sql.QueryTypes.UPDATE
@@ -57,4 +118,4 @@ function updateOrderStatus (sql, id, status) {
     return query
 };
 
-module.exports = { create, addOrderedProduct, updateOrderStatus }
+module.exports = { create, addOrderedProduct, get, getOrderedProductsById, getById, getByUserId, updateOrderStatus }

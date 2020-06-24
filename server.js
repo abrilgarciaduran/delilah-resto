@@ -72,7 +72,7 @@ server.post('/v1/users/login', async (req, res) => {
         res.status(400).json({Error: 'User disabled'})
     }
     const payload = {
-        id: userByUsername[0].id,
+        id: userByUsername[0].id_user,
         username: userByUsername[0].username,
         is_admin: userByUsername[0].is_admin,
         is_active: userByUsername[0].is_active
@@ -113,56 +113,81 @@ server.delete('/v1/products/:id', findProduct, isAdmin, async (req, res) => {
 
 
 //Order Endpoints
-server.get('/v1/orders', isAdmin, (req, res) => {
-    //Trae todas las ordenes
+server.get('/v1/orders', validateToken, async (req, res) => {
+    const token = req.headers.authorization.split(" ")[1];
+    const verifiedToken = jwt.verify(token, jwtSignature.signature);
+    const order_user_id = verifiedToken.id
+    if (verifiedToken.is_admin == false) {
+        console.log('ENTRO A QUE NO ES ADMIN')
+        const getOrder = await orders.getByUserId(sequelize, order_user_id)
+        console.log(getOrder)
+        const getProducts = await orders.getOrderedProductsById(sequelize, getOrder[0].id_order)
+        console.log(getProducts)
+        getOrder[0].orderedProducts = getProducts
+        console.log(getOrder)
 
-    /*
-    const getProducts = await...
-    res.status(200).json(getProducts)
-    */
+        res.status(200).json(getOrder)
+    }
+    else {
+        let orderList = await orders.get(sequelize); 
+        var orderListWithProducts = new Array()
+        let addProductsToOrder = await (
+            orderList.forEach(async (order) => {
+                const thisOrder_id = order.id_order
+                const thisOrder_products = await orders.getOrderedProductsById(sequelize, thisOrder_id);
+                order.orderedProductsList = thisOrder_products
+                orderListWithProducts.push(order)
+                console.log(order)
+                console.log(orderListWithProducts)
+
+                if (orderList.indexOf(order)+1 == orderList.length) {
+                    res.status(200).json(orderList)
+                }
+            })
+        )
+    }
 })
 
 server.post('/v1/orders', validateToken, async (req, res) => {
     try {
-    const {final_price, id_user, payment_method} = req.body;
-    console.log('A crear orden')
-    const createOrder = await orders.create(sequelize, id_user, final_price, payment_method);
-    console.log(createOrder)
-    const { products } = req.body;
-    products.forEach(async (productToAdd) => {
-        const id = productToAdd.product_id;
-        const amount = productToAdd.amount;
-        const addProduct = await orders.addOrderedProduct(sequelize, createOrder[0], id, amount)
-        console.log(addProduct)
-    });
-    res.status(201).json({ Success: "order sent"})
+        const {final_price, id_user, payment_method} = req.body;
+        console.log('A crear orden')
+        const createOrder = await orders.create(sequelize, id_user, final_price, payment_method);
+        console.log(createOrder)
+        
+        const { products } = req.body;
+        products.forEach(async (productToAdd) => {
+            const id = productToAdd.product_id;
+            const amount = productToAdd.amount;
+            const addProduct = await orders.addOrderedProduct(sequelize, createOrder[0], id, amount)
+            console.log(addProduct)
+        });
+        res.status(201).json({ Success: "order sent"})
+        }
+    catch (err) {
+        res.status(500).json(err.message);
+    }
+})
+
+server.get('/v1/orders/:id', findOrder, isAdmin, async (req, res) => {
+    try {
+        const getOrder = await orders.getById(sequelize, req.params.id)
+        console.log(getOrder)
+        const getProducts = await orders.getOrderedProductsById(sequelize, req.params.id)
+        console.log(getProducts)
+        getOrder[0].orderedProducts = getProducts
+        console.log(getOrder)
+        res.status(200).json(getOrder)
     }
     catch {
-        res.status(400).json({ Error: "Bad Request"})
+        res.status(400).json({ Error: 'Bad Request'})
     }
-})
-
-server.get('/v1/orders/:id', findOrder, (req, res) => {
-    //Trae un pedido
-
-    /*
-    const getProduct = await...
-    res.status(200).json(getProduct)
-    */
-})
-
-server.put('/v1/orders/:id', findOrder, isAdmin, (req, res) => {
-    //Modificar el estado del pedido
-
-    /*
-    const modiefiedOrder = await...
-    res.status(201).json(orderModified)
-    */
 })
 
 server.patch('/v1/orders/:id', findOrder, isAdmin, async (req, res) => {
     const { status } = req.body;
     const modifiedStatus = await orders.updateOrderStatus(sequelize, req.params.id, status)
+    res.status(200).json({Success: "Status changed"})
 })
 
 
@@ -180,12 +205,14 @@ server.patch('/v1/orders/:id', findOrder, isAdmin, async (req, res) => {
 SELECT orders.id_order, orders.status, orders.order_time, orders.final_price, orders.payment_method, users.full_name, users.address
 FROM orders
 JOIN users ON users.id_user = orders.user_id
-WHERE orders.id_order = 2
+WHERE orders.id_order = 16
 
 SELECT ordered_products.amount, products.name 
 FROM ordered_products
 JOIN products ON products.id_product = ordered_products.product_id
-WHERE ordered_products.order_id = 2
+WHERE ordered_products.order_id = 16
+
+
 */
 
 
