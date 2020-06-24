@@ -38,7 +38,7 @@ O clonar el proyecto desde el siguiente [link](https://github.com/abrilgarciadur
 2) **Instalar dependencias**
 
 En la consola, dirigirse a la carpeta raíz del proyecto y ejecutar:
->npm init
+>npm install
 
 3) **Configurar base de datos**
 
