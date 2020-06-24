@@ -54,4 +54,4 @@ En la consola, dirigirse a la carpeta raíz del proyecto y ejecutar:
 
 5) **Listo para usar**
 
-En esta [colección de Postman](https://www.getpostman.com/collections/d77ffe64734586288cb9) puedes ver ejemplos de consultas a cada endpoint.
+En esta [![Colección de Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/d77ffe64734586288cb9) puedes ver ejemplos de consultas a cada endpoint.
